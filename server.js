@@ -58,57 +58,34 @@ app.get('/collectibles/:index', (req, res) => {
 // Using Query Parameters (?)
 app.get('/shoes', (req, res) => {
 
-  if (req.query['min-price']) {//check if the Query Parameters = min-price
+  const minPrice = parseFloat(req.query['min-price']);
+  const maxPrice = parseFloat(req.query['max-price']);
+  const shoeType = req.query['type'];
+
+  let shoes_items = shoes; // collect all items in one varible 
+
+  if (!isNaN(minPrice)) {//check if the Query Parameters = min-price
     
-    let shoes_items = ''; // collect all items in one varible 
-
-    for (let item = 0; item < shoes.length; item++) {
-
-      if (shoes[item].price >= req.query['min-price']) {//check if the price is >= Query Parameters price
-      shoes_items += `<h2>shoe name: ${shoes[item].name}, shoe price: ${shoes[item].price}, shoe type: ${shoes[item].type}</h2>`; 
-      }
-    }
-
-    res.send(shoes_items); // display all items
+    shoes_items = shoes_items.filter(shoe => shoe.price >= minPrice);
 
   }
-  else if (req.query['max-price']) {//check if the Query Parameters = max-price
-    
-  let shoes_items = ''; 
-
-    for (let item = 0; item < shoes.length; item++) {
-
-      if (shoes[item].price <= req.query['max-price']) {//check if the price is <= Query Parameters price
-      shoes_items += `<h2>shoe name: ${shoes[item].name}, shoe price: ${shoes[item].price}, shoe type: ${shoes[item].type}</h2>`; 
-      }
-    }
-
-    res.send(shoes_items);
+  if (!isNaN(maxPrice)) {//check if the Query Parameters = max-price
+   
+    shoes_items = shoes_items.filter(shoe => shoe.price <= maxPrice);
 
   }
-  else if (req.query['type']) {//check if the Query Parameters = type
+  if (shoeType) {//check if the Query Parameters = type
     
-    let shoes_items = ''; 
-
-    for (let item = 0; item < shoes.length; item++) {
-
-      if (shoes[item].type === req.query['type']) {//check if the type is = Query Parameters type
-      shoes_items += `<h2>shoe name: ${shoes[item].name}, shoe price: ${shoes[item].price}, shoe type: ${shoes[item].type}</h2>`; 
-      }
-    }
-
-    res.send(shoes_items);
+    shoes_items = shoes_items.filter(shoe => shoe.type === shoeType);
   
   }
-  else{
 
-    let shoes_items = '';
-    
-    for (let item = 0; item < shoes.length; item++) {
-      shoes_items += `<h2>shoe name: ${shoes[item].name}, shoe price: ${shoes[item].price}, shoe type: ${shoes[item].type}</h2>`;
-    }
+  shoes_items_html = '';
 
-    res.send(shoes_items); 
+  for (let item = 0; item < shoes_items.length; item++) {
+    shoes_items_html += `<h2>shoe name: ${shoes_items[item].name}, shoe price: ${shoes_items[item].price}, shoe type: ${shoes_items[item].type}</h2>`;
   }
+
+  res.send(shoes_items_html); 
 
 });
